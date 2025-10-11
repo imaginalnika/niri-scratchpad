@@ -4,7 +4,7 @@ Scratchpad support for [Niri](https://github.com/YaLTeR/niri): a scrollable-tili
 
 https://github.com/user-attachments/assets/6911e9b3-0a3c-4657-a564-7fcc3f0037b1
 
-## Usage
+## Install
 
 Add this flake to your inputs.
 
@@ -17,27 +17,41 @@ inputs = {
 }
 ```
 
-Access the package via `niri-scratchpad` or `default`.
+Install the package via `niri-scratchpad` or `default`, e.g.
 
 ```nix
-inputs.niri-scratchpad-flake.packages.${system}.niri-scratchpad;
+let
+  inherit (inputs.ns-flake.packages.${system}) niri-scratchpad;
+in
+{
+  home.packages = [ niri-scratchpad ];
+}
 ```
 
-Only available for Linux systems, see `nix flake show`.
+Only available for Linux systems, see `nix flake show` for more.
+
+If Nix is not your jam, simply copy the [ns.py](./src/ns.py) script into your system and give it execution permissions (`chmod +x ns.py`). You'll need Python 3 installed.
+
+## Usage
+
+See `niri-scratchpad --help` for the available commands.
 
 ```console
-$ nix flake show --all-systems
-git+file:///home/gvolpe/workspace/niri-scratchpad
-└───packages
-    ├───aarch64-linux
-    │   ├───default: package 'niri-scratchpad'
-    │   └───niri-scratchpad: package 'niri-scratchpad'
-    └───x86_64-linux
-        ├───default: package 'niri-scratchpad'
-        └───niri-scratchpad: package 'niri-scratchpad'
+$ niri-scratchpad --help
+usage: niri-scratchpad [-h] (-id APP_ID | -t TITLE) [-s SPAWN] [-a] [-m]
+
+Niri Scratchpad support
+
+options:
+  -h, --help            show this help message and exit
+  -id, --app-id APP_ID  The application identifier
+  -t, --title TITLE     The application title
+  -s, --spawn SPAWN     The process name to spawn when non-existing
+  -a, --animations      Enable animations
+  -m, --multi-monitor   Multi-monitor support (coming soon)
 ```
 
-If Nix is not your jam, simply copy the [scratchpad.sh](./src/scratchpad.sh) file into your system and give it execution permissions (`chmod +x scratchpad.sh`). Even if you're on Nix, have a look at the script source code :)
+Scratchpad windows can be searched either by `app-id` or `title`.
 
 ## Niri Configuration
 
@@ -64,8 +78,8 @@ Next, we have our scratchpad keybindings.
 
 ```kdl
 binds {
-    Mod+Ctrl+S { spawn-sh "niri-scratchpad spotify"; }
-    Mod+Ctrl+F { spawn-sh "niri-scratchpad --app-id nemo"; }
+    Mod+Ctrl+S { spawn-sh "niri-scratchpad -id spotify"; }
+    Mod+Ctrl+F { spawn-sh "niri-scratchpad -id nemo"; }
 }
 ```
 
@@ -89,31 +103,35 @@ In the following example, we have a keybinding for the Audacious application, wh
 
 ```kdl
 binds {
-    Mod+Ctrl+A { spawn-sh "niri-scratchpad --app-id Audacious --spawn audacious"; }
+    Mod+Ctrl+A { spawn-sh "niri-scratchpad -id Audacious -s audacious"; }
 }
 ```
 
-**NOTE**: a spawned window via the `--spawn` flag can't be made floating the first time it's brought up, but it will be from the second time onwards, due to a known limitation. If you would like to avoid this, you can either fix it via a window rule, or by letting Niri start the process at startup instead.
+**NOTE**: a spawned window via the `--spawn` (or `-s`) flag can't be made floating the first time it's brought up, but it will be from the second time onwards, due to a known limitation. If you would like to avoid this, you can either fix it via a window rule, or by letting Niri start the process at startup instead.
 
 ### Animations
 
-By default, scratchpad animations are disabled. To enable them, set the `NIRI_SCRATCHPAD_ANIMATIONS` environment variable to any value, e.g.
+Scratchpad animations are disabled by default. To enable them, set the `--animations` or `-a` flag, e.g.
 
 ```console
-NIRI_SCRATCHPAD_ANIMATIONS=true niri-scratchpad nemo
+$ niri-scratchpad -id nemo -a
 ```
 
 The animation is achieved by switching the scratchpad window to tiling mode when it's moved to the scratch workspace, and subsequently making it a floating window when it's summoned.
 
+### Multiple monitors
+
+Multi-monitor support is coming soon and it can be enabled via the `multi-monitor` or `-m` flags. It is disabled by default because it requires e few extra IPC commands.
+
 ## Known Limitations
 
-Given the fact that Niri doesn't support "hidden" workspaces, this solution imposes a few caveats. First of all, the "scratch" workspace will always be visible if you scroll all the way down to your last workspace, it can't be hidden.
+Given the fact that Niri doesn't support "hidden" workspaces, this solution imposes a few caveats. First of all, the "scratch" workspace will always be visible if you scroll all the way down to your last workspace; it can't be hidden.
 
 ### Dynamic workspaces
 
 If you rely on accessing your workspaces by index (e.g. `Mod+2`, `Mod+3`) and don't explicitly declare your workspaces in your configuration, then it means you're relying on dynamic workspaces, which is the default in Niri.
 
-Declaring only the "scratch" workspace and leaving everything else as dynamic still works, but you can't expect your indices to remain the same. So always declare all your workspaces explicitly (see [Named Workspaces](https://yalter.github.io/niri/Configuration%3A-Named-Workspaces.html)) if you'd like the indices to be predictable.
+Declaring only the "scratch" workspace and leaving everything else as dynamic *still works*, but you can't expect your indices to remain the same. So always declare all your workspaces explicitly (see [Named Workspaces](https://yalter.github.io/niri/Configuration%3A-Named-Workspaces.html)) if you'd like the indices to be predictable.
 
 Nevertheless, a better approach is to access your workspaces by name instead, e.g.
 

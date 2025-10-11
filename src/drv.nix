@@ -1,13 +1,15 @@
-{ lib, jq, niri, writeShellApplication }:
+{ lib, python3Packages }:
 
-writeShellApplication {
-  name = "niri-scratchpad";
-  bashOptions = [ "errexit" "pipefail" ];
-  runtimeInputs = [ jq niri ];
-
-  text =
-    let src = builtins.readFile ./scratchpad.sh;
-    in builtins.replaceStrings [ "#! /usr/bin/env bash" ] [ "" ] src;
+let
+  pname = "niri-scratchpad";
+in
+python3Packages.buildPythonApplication {
+  inherit pname;
+  version = "0.0.1";
+  pyproject = false;
+  propagatedBuildInputs = [ ];
+  dontUnpack = true;
+  installPhase = "install -Dm755 ${./ns.py} $out/bin/${pname}";
 
   meta = {
     description = "Scratchpad support for the Niri Wayland compositor";
