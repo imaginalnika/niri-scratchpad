@@ -1,5 +1,7 @@
 # niri-scratchpad
 
+[![ci](https://github.com/gvolpe/niri-scratchpad/actions/workflows/ci.yml/badge.svg)](https://github.com/gvolpe/niri-scratchpad/actions/workflows/ci.yml)
+
 Scratchpad support for [Niri](https://github.com/YaLTeR/niri): a scrollable-tiling Wayland compositor.
 
 https://github.com/user-attachments/assets/6911e9b3-0a3c-4657-a564-7fcc3f0037b1
