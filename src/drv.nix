@@ -5,7 +5,7 @@ let
 in
 python3Packages.buildPythonApplication {
   pname = "niri-scratchpad";
-  version = "0.0.1";
+  version = "0.0.2";
   pyproject = false;
   propagatedBuildInputs = [ ];
   dontUnpack = true;
