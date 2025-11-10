@@ -8,6 +8,8 @@ https://github.com/user-attachments/assets/6911e9b3-0a3c-4657-a564-7fcc3f0037b1
 
 ## Install
 
+### With Nix/NixOS
+
 Add this flake to your inputs.
 
 ```nix
@@ -32,7 +34,17 @@ in
 
 Only available for Linux systems, see `nix flake show` for more.
 
-If Nix is not your jam, simply copy the [ns.py](./src/ns.py) script into your system and give it execution permissions (`chmod +x ns.py`). You'll need Python 3 installed.
+### Without Nix
+
+Copy the [ns.py](./src/ns.py) script into your system and make it executable:
+
+```bash
+chmod +x ns.py
+# Optionally move to somewhere in your PATH
+sudo mv ns.py /usr/local/bin/nscratch
+```
+
+Requires Python 3.
 
 ## Usage
 
